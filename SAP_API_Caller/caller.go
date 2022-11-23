@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"sap-api-integrations-sales-order-creates-rmq-kube/SAP_API_Caller/requests"
-	"sap-api-integrations-sales-order-creates-rmq-kube/SAP_API_Caller/responses"
+	"sap-api-integrations-sales-order-creates/SAP_API_Caller/requests"
+	"sap-api-integrations-sales-order-creates/SAP_API_Caller/responses"
 
 	"strings"
 	"sync"
@@ -15,30 +15,21 @@ import (
 	"golang.org/x/xerrors"
 )
 
-type RMQOutputter interface {
-	Send(sendQueue string, payload map[string]interface{}) error
-}
-
 type SAPAPICaller struct {
 	baseURL         string
 	sapClientNumber string
 	requestClient   *sap_api_request_client_header_setup.SAPRequestClient
-	outputQueues    []string
-	outputter       RMQOutputter
 	log             *logger.Logger
 }
 
-func NewSAPAPICaller(baseUrl, sapClientNumber string, requestClient *sap_api_request_client_header_setup.SAPRequestClient, outputQueueTo []string, outputter RMQOutputter, l *logger.Logger) *SAPAPICaller {
+func NewSAPAPICaller(baseUrl, sapClientNumber string, requestClient *sap_api_request_client_header_setup.SAPRequestClient, l *logger.Logger) *SAPAPICaller {
 	return &SAPAPICaller{
 		baseURL:         baseUrl,
 		requestClient:   requestClient,
 		sapClientNumber: sapClientNumber,
-		outputQueues:    outputQueueTo,
-		outputter:       outputter,
 		log:             l,
 	}
 }
-
 func (c *SAPAPICaller) AsyncPostSalesOrder(
 	headerItem *requests.HeaderItem,
 	accepter []string) {
@@ -61,11 +52,6 @@ func (c *SAPAPICaller) AsyncPostSalesOrder(
 
 func (c *SAPAPICaller) HeaderItem(headerItem *requests.HeaderItem) {
 	err := c.callSalesOrderSrvAPIRequirementHeaderItem("A_SalesOrder", headerItem)
-	if err != nil {
-		c.log.Error(err)
-		return
-	}
-	err = c.outputter.Send(c.outputQueues[0], map[string]interface{}{"message": headerItem, "function": "SalesOrderHeaderItem"})
 	if err != nil {
 		c.log.Error(err)
 		return

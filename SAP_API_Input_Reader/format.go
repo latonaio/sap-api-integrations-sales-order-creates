@@ -1,7 +1,7 @@
 package sap_api_input_reader
 
 import (
-	"sap-api-integrations-sales-order-creates-rmq-kube/SAP_API_Caller/requests"
+	"sap-api-integrations-sales-order-creates/SAP_API_Caller/requests"
 )
 
 func (sdc *SDC) ConvertToHeaderItem() *requests.HeaderItem {

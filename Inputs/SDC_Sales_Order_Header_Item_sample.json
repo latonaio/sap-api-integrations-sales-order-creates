@@ -243,7 +243,7 @@
 		}
 	]
 	},
-	"api_schema": "SAPSalesOrderReads",
+	"api_schema": "SAPSalesOrderCreates",
 	"accepter": ["HeaderItem"],
 	"sales_order": "",
 	"deleted": false

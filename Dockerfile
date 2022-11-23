@@ -12,16 +12,16 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o sap-api-integrations-sales-order-creates-rmq-kube
+RUN go build -o sap-api-integrations-sales-order-creates
 
 # Runtime Container
 FROM alpine:3.14
 RUN apk add --no-cache libc6-compat
-ENV SERVICE=sap-api-integrations-sales-order-creates-rmq-kube \
+ENV SERVICE=sap-api-integrations-sales-order-creates \
     APP_DIR="${AION_HOME}/${POSITION}/${SERVICE}"
 
 WORKDIR ${AION_HOME}
 
-COPY --from=builder /go/src/github.com/latonaio/sap-api-integrations-sales-order-creates-rmq-kube .
+COPY --from=builder /go/src/github.com/latonaio/sap-api-integrations-sales-order-creates .
 
-CMD ["./sap-api-integrations-sales-order-creates-rmq-kube"]
+CMD ["./sap-api-integrations-sales-order-creates"]
